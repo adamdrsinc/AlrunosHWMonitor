@@ -1,6 +1,3 @@
-// AlrunosHWMonitor.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
 #include <string>
 #include <vector>
@@ -9,8 +6,12 @@
 #include <iomanip>
 #include <chrono>
 
-const long double GB{ 9.3132257461548E-10 };
-const long double MB{ 1.0E-6 };
+//Conversions from Byte to X. Do (bytes * CONV_X) for conversion.
+#define CONV_GB 9.3132257461548E-10
+#define CONV_MB 1.0E-6
+
+//Keyboard Definitions
+#define KB_Q 0x51
 
 //#define MB 1048576
 //#define GB 9.3132257461548E-10
@@ -19,7 +20,7 @@ void runCPUMonitor();
 void runRAMMonitor();
 void clearConsole();
 void returnToMainMenu();
-void eraseLines(int count);
+void clearLines(int count);
 
 struct MenuOptions {
     const std::string MAIN_STORAGE{ "main storage" };
@@ -130,34 +131,34 @@ void runCPUMonitor()
 
 void runRAMMonitor()
 {
+    clearConsole();
+
+    std::cout
+        << "\n-----------------\n"
+        << "-- RAM Monitor --\n"
+        << "-----------------\n"
+        << std::endl;
+
     std::chrono::steady_clock::time_point tPoint{ std::chrono::steady_clock::now() };
 
     char inp{' '};
     bool ramMonitorRunning{ true };
-    bool resetRAMMonitor{ true };
+    bool nextTick{ true };
     while (ramMonitorRunning)
     {
-        if (resetRAMMonitor)
+        if (nextTick)
         {
-            resetRAMMonitor = false;
+            nextTick = false;
             tPoint = std::chrono::steady_clock::now();
 
             MEMORYSTATUSEX memStat;
             memStat.dwLength = sizeof(memStat);
             GlobalMemoryStatusEx(&memStat);
 
-            clearConsole();
-
-            std::cout
-                << "\n-----------------\n"
-                << "-- RAM Monitor --\n"
-                << "-----------------\n"
-                << std::endl;
-
-            std::cout << "Total RAM (GB): " << std::fixed << std::setprecision(4) << memStat.ullTotalPhys * GB << std::endl;
-            std::cout << "Total RAM (MB): " << std::fixed << std::setprecision(4) << memStat.ullTotalPhys * MB << std::endl;
+            std::cout << "Total RAM (GB): " << std::fixed << std::setprecision(4) << memStat.ullTotalPhys * CONV_GB << std::endl;
+            std::cout << "Total RAM (MB): " << std::fixed << std::setprecision(4) << memStat.ullTotalPhys * CONV_MB << std::endl;
             std::cout << "Usage (%): " << memStat.dwMemoryLoad << std::endl;
-            std::cout << "Available (MB): " << std::fixed << std::setprecision(4) << memStat.ullAvailPhys * MB << std::endl;
+            std::cout << "Available (MB): " << std::fixed << std::setprecision(4) << memStat.ullAvailPhys * CONV_MB << std::endl;
             std::cout << "Press q to quit to the main menu." << std::endl;
         }
         
@@ -165,10 +166,14 @@ void runRAMMonitor()
         std::chrono::steady_clock::duration timeElapsed = std::chrono::steady_clock::now() - tPoint;
         
         if (std::chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count() >= 2500)
-            resetRAMMonitor = true;
+        {
+            nextTick = true;
+            clearLines(6);
+        }
+            
 
 #ifdef _WIN32
-        if (GetAsyncKeyState(0x51))
+        if (GetAsyncKeyState(KB_Q))
         {
             break;
         }           
@@ -189,7 +194,7 @@ void clearConsole()
 #endif
 }
 
-void eraseLines(int count) {
+void clearLines(int count) {
     if (count > 0) {
         std::cout << "\x1b[2K"; // Delete current line
         // i=1 because we included the first line
