@@ -2,19 +2,54 @@
 //
 
 #include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+
+
+struct HardwareSelections {
+    const std::vector<std::string> SELECTIONS_VECTOR{ALL, MAIN_STORAGE, CPU, GPU, RAM, QUIT};
+    const std::string MAIN_STORAGE{ "main storage" };
+    const std::string ALL         { "all" };
+    const std::string CPU         { "cpu" };
+    const std::string GPU         { "gpu" };
+    const std::string RAM         { "ram" };
+    const std::string QUIT        { "quit" };
+};
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    float versionNumber{ 0.1f };  
+    HardwareSelections hwSelections;
+
+
+    std::multimap<std::string, std::string> hardwareOptions;
+    hardwareOptions.insert(std::pair<std::string, std::string>("all",          hwSelections.ALL));
+    hardwareOptions.insert(std::pair<std::string, std::string>("cpu",          hwSelections.CPU));
+    hardwareOptions.insert(std::pair<std::string, std::string>("gpu",          hwSelections.GPU));
+    hardwareOptions.insert(std::pair<std::string, std::string>("main storage", hwSelections.MAIN_STORAGE));
+    hardwareOptions.insert(std::pair<std::string, std::string>("main",         hwSelections.MAIN_STORAGE));
+    hardwareOptions.insert(std::pair<std::string, std::string>("ram",          hwSelections.RAM));
+    hardwareOptions.insert(std::pair<std::string, std::string>("quit",         hwSelections.QUIT));
+
+
+
+    std::cout << "Alrunos Hardware Monitor v. " << versionNumber << '\n';
+
+
+    bool running = true;
+    while (running)
+    {
+        std::string userSelection{ "" };
+
+        std::cout << "Select an option:\n";
+        for (const std::string selection : hwSelections.SELECTIONS_VECTOR)
+        {
+            std::cout << "- " << selection << '\n';
+        }
+        std::cin >> userSelection;
+        while()
+    }
+    
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
