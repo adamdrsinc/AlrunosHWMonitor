@@ -33,11 +33,6 @@ struct MenuOptions {
 
 };
 
-void runCPUMonitor();
-void runRAMMonitor();
-void clearConsole();
-void returnToMainMenu();
-void eraseLines();
 
 int main()
 {
