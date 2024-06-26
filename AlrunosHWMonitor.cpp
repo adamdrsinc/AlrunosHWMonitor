@@ -13,111 +13,128 @@
 //Keyboard Definitions
 #define KB_Q 0x51
 
-//#define MB 1048576
-//#define GB 9.3132257461548E-10
-
 void runCPUMonitor();
 void runRAMMonitor();
 void clearConsole();
-void returnToMainMenu();
 void clearLines(int count);
 
-struct MenuOptions {
-    const std::string MAIN_STORAGE{ "main storage" };
-    const std::string ALL         { "all" };
-    const std::string CPU         { "cpu" };
-    const std::string GPU         { "gpu" };
-    const std::string RAM         { "ram" };
-    const std::string QUIT        { "quit" };
-    const std::string ADD_MENU_SHORTCUT{ "add menu shortcut" };
-    const std::vector<std::string> SELECTIONS_VECTOR{ ALL, MAIN_STORAGE, CPU, GPU, RAM, ADD_MENU_SHORTCUT, QUIT };
-
+enum MenuOption
+{
+    ALL,
+    MAIN_STORAGE,
+    CPU,
+    GPU,
+    RAM,
+    QUIT,
+    COUNT_ENUM
 };
+std::string menuOptionToString(MenuOption option)
+{
+    switch (option)
+    {
+    case ALL:
+        return "All";
+        break;
+    case MAIN_STORAGE:
+        return "Main Storage";
+        break;
+    case CPU:
+        return "CPU";
+        break;
+    case GPU:
+        return "GPU";
+        break;
+    case RAM:
+        return "RAM";
+        break;
+    case QUIT:
+        return "Quit";
+        break;
+    default:
+        return "FAIL";
+        
+    }
+}
 
+
+bool checkIsNumber(std::string uInp)
+{
+    return (uInp.find_first_not_of("0123456789") == std::string::npos);
+}
 
 int main()
 {
     //Initialising and defining key variables.
     float versionNumber{ 0.1f };  
-    MenuOptions menuOptions;
-
-    std::multimap<std::string, std::string> menuInputs;
-    //All
-    menuInputs.insert(std::pair<std::string, std::string>(menuOptions.ALL,          menuOptions.ALL));
-    //CPU
-    menuInputs.insert(std::pair<std::string, std::string>(menuOptions.CPU,          menuOptions.CPU));
-    //GPU
-    menuInputs.insert(std::pair<std::string, std::string>(menuOptions.GPU,          menuOptions.GPU));
-    //Main Storage
-    menuInputs.insert(std::pair<std::string, std::string>(menuOptions.MAIN_STORAGE, menuOptions.MAIN_STORAGE));
-    menuInputs.insert(std::pair<std::string, std::string>("main", menuOptions.MAIN_STORAGE));
-    //RAM
-    menuInputs.insert(std::pair<std::string, std::string>(menuOptions.RAM,          menuOptions.RAM));
-    //Quit
-    menuInputs.insert(std::pair<std::string, std::string>(menuOptions.QUIT,         menuOptions.QUIT));
-    menuInputs.insert(std::pair<std::string, std::string>("q", menuOptions.QUIT));
-    //Add Menu Shortcuts
-    menuInputs.insert(std::pair<std::string, std::string>("shortcut", menuOptions.ADD_MENU_SHORTCUT));
-    menuInputs.insert(std::pair<std::string, std::string>(menuOptions.ADD_MENU_SHORTCUT, menuOptions.ADD_MENU_SHORTCUT));
-    menuInputs.insert(std::pair<std::string, std::string>("add", menuOptions.ADD_MENU_SHORTCUT));
-
 
     bool running = true;
     while (running)
     {
         clearConsole();
+
         //Start
         std::cout << "Alrunos Hardware Monitor v." << versionNumber << std::endl;
 
-        std::string userSelection{ "" };
+        std::string userSelection{ "-1" };
 
         std::cout << "Select an option:\n";
-        for (int i = 0; i < menuOptions.SELECTIONS_VECTOR.size(); ++i)
+        for (int i = 0; i < MenuOption::COUNT_ENUM; ++i)
         {
-            std::cout << "- " << menuOptions.SELECTIONS_VECTOR[i] << std::endl;
+            auto currentEnum{ static_cast<MenuOption>(i) };
+            std::cout << currentEnum+1 << ". " << menuOptionToString(currentEnum) << std::endl;
         }
 
-        std::cin >> userSelection;
-
-        while (menuInputs.count(userSelection) == 0)
+        bool isValid = false;
+        bool isNumber = false;
+        while (isValid == false && isNumber == false)
         {
-            std::cout << "Please select a valid option." << std::endl;
-            std::cin >> userSelection;
+            std::getline(std::cin, userSelection);
+
+            if (userSelection.empty())
+            {
+                std::cout << "Enter a value." << std::endl;
+                continue;
+            }
+            
+            if (checkIsNumber(userSelection))
+            {
+                isNumber = true;
+                if (std::stoi(userSelection) >= 0 && std::stoi(userSelection) <= MenuOption::COUNT_ENUM)
+                {
+                    isValid = true;
+                }
+                else
+                {
+                    std::cout << "Input a valid option." << std::endl;
+                    isValid = false;
+                }
+            }
+            else
+            {
+                isNumber = false;
+                std::cout << "Input a number." << std::endl;
+            }
         }
 
-        auto itr = menuInputs.find(userSelection);
-        std::string userSelectedValue{itr->second};
-
-        //Going to user selected area
-        if (userSelectedValue == menuOptions.ALL)
+        int enumSelection = std::stoi(userSelection) - 1;
+        switch (enumSelection)
         {
-
-        }
-        else if (userSelectedValue == menuOptions.CPU)
-        {
-            runCPUMonitor();
-        }
-        else if (userSelectedValue == menuOptions.GPU)
-        {
-
-        }
-        else if (userSelectedValue == menuOptions.MAIN_STORAGE)
-        {
-
-        }
-        else if (userSelectedValue == menuOptions.RAM)
-        {
-            runRAMMonitor();
-        }
-        else if (userSelectedValue == menuOptions.ADD_MENU_SHORTCUT) 
-        {
-
-        }
-        else if (userSelectedValue == menuOptions.QUIT)
-        {
-            std::cout << "Quitting..." << std::endl;
+        case MenuOption::ALL:
             break;
+        case MenuOption::MAIN_STORAGE:
+            break;
+        case MenuOption::CPU:
+            break;
+        case MenuOption::GPU:
+            break;
+        case MenuOption::RAM:
+            runRAMMonitor();
+            break;
+        case MenuOption::QUIT:
+            std::cout << "Quitting..." << std::endl;
+            return 0;
         }
+
     }
 
     return 0;
@@ -139,6 +156,15 @@ void runRAMMonitor()
         << "-----------------\n"
         << std::endl;
 
+    //Getting memory statistics from Windows
+    MEMORYSTATUSEX memStat;
+    memStat.dwLength = sizeof(memStat);
+    GlobalMemoryStatusEx(&memStat);
+
+    //Outputting how much total RAM in GB and MB the user has. This is set to 4 decimal places.
+    std::cout << "Total RAM (GB): " << std::fixed << std::setprecision(4) << memStat.ullTotalPhys * CONV_GB << std::endl;
+    std::cout << "Total RAM (MB): " << std::fixed << std::setprecision(4) << memStat.ullTotalPhys * CONV_MB << std::endl;
+
     std::chrono::steady_clock::time_point tPoint{ std::chrono::steady_clock::now() };
 
     char inp{' '};
@@ -149,26 +175,27 @@ void runRAMMonitor()
         if (nextTick)
         {
             nextTick = false;
+            //Getting current time
             tPoint = std::chrono::steady_clock::now();
 
-            MEMORYSTATUSEX memStat;
-            memStat.dwLength = sizeof(memStat);
             GlobalMemoryStatusEx(&memStat);
 
-            std::cout << "Total RAM (GB): " << std::fixed << std::setprecision(4) << memStat.ullTotalPhys * CONV_GB << std::endl;
-            std::cout << "Total RAM (MB): " << std::fixed << std::setprecision(4) << memStat.ullTotalPhys * CONV_MB << std::endl;
+            //Outputting % usage of RAM.
             std::cout << "Usage (%): " << memStat.dwMemoryLoad << std::endl;
+            //Outputting available RAM in MB to user.
             std::cout << "Available (MB): " << std::fixed << std::setprecision(4) << memStat.ullAvailPhys * CONV_MB << std::endl;
             std::cout << "Press q to quit to the main menu." << std::endl;
         }
         
 
+        //Getting time since last update
         std::chrono::steady_clock::duration timeElapsed = std::chrono::steady_clock::now() - tPoint;
         
-        if (std::chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count() >= 2500)
+        //If 2.5 seconds have elapsed, update to next tick
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count() >= 1000)
         {
             nextTick = true;
-            clearLines(6);
+            clearLines(4);
         }
             
 
@@ -206,9 +233,3 @@ void clearLines(int count) {
         std::cout << "\r"; // Resume the cursor at beginning of line
     }
 }
-
-void returnToMainMenu()
-{
-
-}
-
