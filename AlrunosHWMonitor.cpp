@@ -17,6 +17,8 @@ void runCPUMonitor();
 void runRAMMonitor();
 void clearConsole();
 void clearLines(int count);
+bool checkIsNumber(std::string uInp);
+std::string menuOptionToString(MenuOption option);
 
 enum MenuOption
 {
@@ -28,39 +30,8 @@ enum MenuOption
     QUIT,
     COUNT_ENUM
 };
-std::string menuOptionToString(MenuOption option)
-{
-    switch (option)
-    {
-    case ALL:
-        return "All";
-        break;
-    case MAIN_STORAGE:
-        return "Main Storage";
-        break;
-    case CPU:
-        return "CPU";
-        break;
-    case GPU:
-        return "GPU";
-        break;
-    case RAM:
-        return "RAM";
-        break;
-    case QUIT:
-        return "Quit";
-        break;
-    default:
-        return "FAIL";
-        
-    }
-}
 
 
-bool checkIsNumber(std::string uInp)
-{
-    return (uInp.find_first_not_of("0123456789") == std::string::npos);
-}
 
 int main()
 {
@@ -231,5 +202,38 @@ void clearLines(int count) {
                 << "\x1b[2K"; // Delete the entire line
         }
         std::cout << "\r"; // Resume the cursor at beginning of line
+    }
+}
+
+bool checkIsNumber(std::string uInp)
+{
+    return (uInp.find_first_not_of("0123456789") == std::string::npos);
+}
+
+std::string menuOptionToString(MenuOption option)
+{
+    switch (option)
+    {
+    case ALL:
+        return "All";
+        break;
+    case MAIN_STORAGE:
+        return "Main Storage";
+        break;
+    case CPU:
+        return "CPU";
+        break;
+    case GPU:
+        return "GPU";
+        break;
+    case RAM:
+        return "RAM";
+        break;
+    case QUIT:
+        return "Quit";
+        break;
+    default:
+        return "FAIL";
+
     }
 }
