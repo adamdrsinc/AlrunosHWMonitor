@@ -2,6 +2,7 @@
 #include <string>
 #include "ConsoleTools.h"
 #include "RAMMonitor.h"
+#include "CPUMonitor.h"
 
 enum MenuOption
 {
@@ -84,7 +85,10 @@ int main()
         case MenuOption::MAIN_STORAGE:
             break;
         case MenuOption::CPU:
+        {
+            CPUMonitor::runCPUMonitor();
             break;
+        }
         case MenuOption::GPU:
             break;
         case MenuOption::RAM:
