@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="AlrunosHWMonitor.cpp" />
     <ClCompile Include="ConsoleTools.cpp" />
+    <ClCompile Include="CPUMonitor.cpp" />
     <ClCompile Include="RAMMonitor.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleTools.h" />
+    <ClInclude Include="CPUMonitor.h" />
     <ClInclude Include="RAMMonitor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

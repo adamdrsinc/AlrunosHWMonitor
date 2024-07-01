@@ -1,5 +1,7 @@
 #include "RAMMonitor.h"
 
+constexpr int TIMER_TICK = 1000;
+
 void RAMMonitor::runRAMMonitor()
 {
     ConsoleTools::clearConsole();
@@ -45,8 +47,8 @@ void RAMMonitor::runRAMMonitor()
         //Getting time since last update
         std::chrono::steady_clock::duration timeElapsed = std::chrono::steady_clock::now() - tPoint;
 
-        //If 2.5 seconds have elapsed, update to next tick
-        if (std::chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count() >= 1000)
+        //If 1 seconds have elapsed, update to next tick
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count() >= TIMER_TICK)
         {
             nextTick = true;
             ConsoleTools::clearLines(4);

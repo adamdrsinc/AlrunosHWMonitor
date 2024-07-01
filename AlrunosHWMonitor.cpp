@@ -38,13 +38,13 @@ int main()
         for (int i = 0; i < MenuOption::COUNT_ENUM; ++i)
         {
             auto currentEnum{ static_cast<MenuOption>(i) };
-            std::cout << currentEnum+1 << ". " << menuOptionToString(currentEnum) << std::endl;
+            std::cout << currentEnum+1 << ". " << menuOptionToString(currentEnum) << '\n';
         }
 
         std::string userSelection{ "" };
         bool isValid = false;
         bool isNumber = false;
-        while (isValid == false && isNumber == false)
+        while (isValid == false || isNumber == false)
         {
             std::getline(std::cin, userSelection);
 
@@ -57,7 +57,9 @@ int main()
             if (checkIsNumber(userSelection))
             {
                 isNumber = true;
-                if (std::stoi(userSelection) >= 0 && std::stoi(userSelection) <= MenuOption::COUNT_ENUM)
+                //TODO: FIX
+                int userSelection_Int{ std::stoi(userSelection) };
+                if ((userSelection_Int >= 0) && (userSelection_Int <= MenuOption::COUNT_ENUM))
                 {
                     isValid = true;
                 }
